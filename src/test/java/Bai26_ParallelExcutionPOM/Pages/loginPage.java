@@ -2,9 +2,10 @@ package Bai26_ParallelExcutionPOM.Pages;
 
 import Keyword.WebUI;
 import driver.DriverManager;
+import helpers.PropertiesHelper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
+
 
 public class loginPage {
 
@@ -62,10 +63,19 @@ public class loginPage {
         WebUI.waitForPageLoaded();
     }
 
+    public void loginCRM( String email, String password) {
+        WebUI.openURL("https://crm.anhtester.com/admin/authentication");
+        WebUI.waitForPageLoaded();
+        WebUI.setText(inputEmail, email);
+        WebUI.setText(inputPassword, password);
+        WebUI.clickElement(buttonLogin);
+        WebUI.waitForPageLoaded();
+    }
+
 
     //Hàm login liên kết với trang Dashboard
     public dashboardPage loginCRM() {
-        WebUI.openURL("https://crm.anhtester.com/admin/authentication");
+        WebUI.openURL(PropertiesHelper.getValue("url"));
         setEmail("admin@example.com");
         setPassword("123456");
         clickLoginButton();

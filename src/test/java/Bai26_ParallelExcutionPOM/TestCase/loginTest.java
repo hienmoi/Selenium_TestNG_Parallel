@@ -2,6 +2,7 @@ package Bai26_ParallelExcutionPOM.TestCase;
 
 import Bai26_ParallelExcutionPOM.Pages.loginPage;
 import Common.BaseTest;
+import helpers.PropertiesHelper;
 import org.testng.annotations.Test;
 
 public class loginTest extends BaseTest {
@@ -13,6 +14,7 @@ public class loginTest extends BaseTest {
         loginPage = new loginPage();
         loginPage.loginCRM("https://crm.anhtester.com/admin/authentication", "admin@example.com", "123456");
         loginPage.verifyLoginSuccess();
+        PropertiesHelper.setValue("email", "admin@example.com", "src/test/resources/configs/data.properties" );
     }
 
     @Test

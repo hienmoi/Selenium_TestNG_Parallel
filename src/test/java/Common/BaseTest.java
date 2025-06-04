@@ -1,23 +1,33 @@
 package Common;
 
 import driver.DriverManager;
+import helpers.PropertiesHelper;
+import listeners.TestListener;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
+import org.testng.annotations.*;
 
 import java.time.Duration;
-
+@Listeners(TestListener.class)
 public class BaseTest {
 
+    @BeforeSuite
+    public void setupEnviroment(){
+        PropertiesHelper.loadAllFiles();
+    }
     @BeforeMethod
     @Parameters("browser")
     public void createDriver(@Optional ("chrome") String browser){
         WebDriver driver;
+
+
+        if (PropertiesHelper.getValue("browser").isEmpty() || PropertiesHelper.getValue("browser").isBlank()){
+            browser = browser;
+        } else {
+            browser = PropertiesHelper.getValue("browser");
+        }
 
         switch (browser){
 

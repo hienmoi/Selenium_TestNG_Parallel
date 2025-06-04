@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite Login Test">
+    <listeners>
+        <listener class-name="listeners.TestListener"></listener>
+    </listeners>
+
+    <test name="Login test withh Chrome">
+        <parameter name="browser" value="chrome"></parameter>
+        <classes>
+            <class name= "Bai31_TestListener.DemoListener">
+
+            </class>
+        </classes>
+    </test>
+
+</suite>

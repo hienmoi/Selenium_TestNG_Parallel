@@ -5,10 +5,7 @@
     <test name="Login test withh Chrome">
         <parameter name="browser" value="chrome"></parameter>
         <classes>
-            <class name= "Bai26_ParallelExcutionPOM.TestCase.loginTest">
-            <methods>
-                <include name="loginSuccess" />
-            </methods>
+            <class name= "Bai34_AllureReport.TestCase.loginTest">
 
             </class>
         </classes>

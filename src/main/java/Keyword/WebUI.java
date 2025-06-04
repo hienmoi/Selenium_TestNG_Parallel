@@ -1,24 +1,32 @@
 //Class này để chứa các hàm xử lý chung cho các action cơ bản như click, nhập text, get text...
 package Keyword;
 
+import com.aventstack.extentreports.Status;
 import driver.DriverManager;
+import helpers.PropertiesHelper;
+import io.qameta.allure.Step;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import reports.AllureManger;
+import reports.ExtentTestManager;
+import utils.LogUtils;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.util.List;
+import java.util.Properties;
 
 public class WebUI {
 
 
     //Các biến giá trị thời gian thiết lập mặc định
-    private static int TIMEOUT = 10;
+    private static int TIMEOUT = Integer.parseInt(PropertiesHelper.getValue("explicit_wait"));
     private static double STEP_TIME = 0.5;
     private static int PAGE_LOAD_TIMEOUT = 20;
 
@@ -102,7 +110,7 @@ public class WebUI {
 
         //Wait Javascript until it is Ready!
         if (!jsReady) {
-            //System.out.println("Javascript is NOT Ready.");
+            //LogUtils.info("Javascript is NOT Ready.");
             //Wait for Javascript to load
             try {
                 wait.until(jsLoad);
@@ -116,10 +124,11 @@ public class WebUI {
 //Các hàm xử lý cơ bản
 
     public static void clearText(By by) {
-        System.out.println("Clear text element" + by);
+        LogUtils.info("Clear text element" + by);
         WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(5));
         wait.until(ExpectedConditions.visibilityOfElementLocated(by));
         DriverManager.getDriver().findElement(by).clear();
+        ExtentTestManager.logMessage(Status.PASS, "Clear text element" + by);
     }
 
     public static void sleep(double second) {
@@ -131,7 +140,7 @@ public class WebUI {
     }
 
     public static void logConsole(Object message) {
-        System.out.println(message);
+        LogUtils.info(message);
     }
 
     public static WebElement getWebElement(By by) {
@@ -146,10 +155,10 @@ public class WebUI {
         List<WebElement> listElement = getWebElements(by);
 
         if (listElement.size() > 0) {
-            System.out.println("checkElementExist: " + true + " --- " + by);
+            LogUtils.info("checkElementExist: " + true + " --- " + by);
             return true;
         } else {
-            System.out.println("checkElementExist: " + false + " --- " + by);
+            LogUtils.info("checkElementExist: " + false + " --- " + by);
             return false;
         }
     }
@@ -162,11 +171,11 @@ public class WebUI {
             try {
                 WebElement element = getWebElement(by);
                 if (element != null) {
-                    System.out.println("Tìm thấy phần tử ở lần thử thứ " + (retryCount + 1));
+                    LogUtils.info("Tìm thấy phần tử ở lần thử thứ " + (retryCount + 1));
                     return true; // Phần tử được tìm thấy
                 }
             } catch (NoSuchElementException e) {
-                System.out.println("Không tìm thấy phần tử. Thử lại lần " + (retryCount + 1));
+                LogUtils.info("Không tìm thấy phần tử. Thử lại lần " + (retryCount + 1));
                 retryCount++;
                 try {
                     Thread.sleep(waitTimeMillis); // Chờ trước khi thử lại
@@ -190,55 +199,68 @@ public class WebUI {
         }
     }
 
+    @Step("Open URL: {0}")
     public static void openURL(String url) {
         DriverManager.getDriver().get(url);
         sleep(STEP_TIME);
-        logConsole("Open URL:  " + url);
+        LogUtils.info("Open URL:  " + url);
+        ExtentTestManager.logMessage(Status.PASS, "Open URL" + url);
     }
-
+    @Step("Click on element {0}")
     public static void clickElement(By by) {
         waitForElementClickable(by);
         sleep(STEP_TIME);
         getWebElement(by).click();
-        logConsole("Click on element " + by);
+        LogUtils.info("Click on element " + by);
+        ExtentTestManager.logMessage(Status.PASS, "Click on element " + by);
     }
-
+    @Step("Click on element {0}")
     public static void clickElement(By by, int timeout) {
         waitForElementClickable(by, timeout);
         sleep(STEP_TIME);
         getWebElement(by).click();
-        logConsole("Click on element " + by);
+        LogUtils.info("Click on element " + by);
+        ExtentTestManager.logMessage(Status.PASS, "Click on element " + by);
     }
-
+    @Step("Set text {1} on element {0}")
     public static void setText(By by, String value) {
         waitForElementVisible(by);
         sleep(STEP_TIME);
         getWebElement(by).sendKeys(value);
-        logConsole("Set text " + value + " on element " + by);
+        LogUtils.info("Set text " + value + " on element " + by);
+        ExtentTestManager.logMessage(Status.PASS, "Set text " + value + " on element " + by);
     }
-
+    @Step("Get text of element {0}")
     public static String getElementText(By by) {
         waitForElementVisible(by);
         sleep(STEP_TIME);
-        logConsole("Get text of element " + by);
+        LogUtils.info("Get text of element " + by);
         String text = getWebElement(by).getText();
-        logConsole("==> TEXT: " + text);
+        LogUtils.info("==> TEXT: " + text);
+        ExtentTestManager.logMessage(Status.PASS, "Get text of element " + by);
+        ExtentTestManager.logMessage(Status.INFO, "==> TEXT: " + text);
+        AllureManger.saveTextLog("==> TEXT: " + text);
         return text; //Trả về một giá trị kiểu String
     }
-
+    @Step("Get attribute {1} of element {0}")
     public static String getElementAttribute(By by, String attributeName) {
         waitForElementVisible(by);
-        System.out.println("Get attribute of element " + by);
+        LogUtils.info("Get attribute of element " + by);
         String value = getWebElement(by).getAttribute(attributeName);
-        System.out.println("==> Attribute value: " + value);
+        LogUtils.info("==> Attribute value: " + value);
+        ExtentTestManager.logMessage(Status.PASS, "Get attribute of element " + by);
+        ExtentTestManager.logMessage(Status.INFO, "==> Attribute value: " + value);
+    AllureManger.saveTextLog("==> Attribute value: " + value);
         return value;
     }
 
     public static String getElementCssValue(By by, String cssPropertyName) {
         waitForElementVisible(by);
-        System.out.println("Get CSS value " + cssPropertyName + " of element " + by);
+        LogUtils.info("Get CSS value " + cssPropertyName + " of element " + by);
         String value = getWebElement(by).getCssValue(cssPropertyName);
-        System.out.println("==> CSS value: " + value);
+        LogUtils.info("==> CSS value: " + value);
+        ExtentTestManager.logMessage(Status.PASS, "Get CSS value " + by);
+        ExtentTestManager.logMessage(Status.INFO, "==> CSS value: " + value);
         return value;
     }
 
@@ -246,7 +268,8 @@ public class WebUI {
     public static void setTextAndKey(By by, String value, Keys key) {
         waitForPageLoaded();
         getWebElement(by).sendKeys(value, key);
-        System.out.println("Set text: " + value + " on element " + by);
+        LogUtils.info("Set text: " + value + " on element " + by);
+        ExtentTestManager.logMessage(Status.PASS, "Hover on element " + by);
     }
 
     public static void scrollToElement(By by) {
@@ -410,34 +433,34 @@ public class WebUI {
     //Các hàm Verify và Assert
     public static boolean verifyEquals(Object actual, Object expected) {
         waitForPageLoaded();
-        System.out.println("Verify equals: " + actual + " and " + expected);
+        LogUtils.info("Verify equals: " + actual + " and " + expected);
         boolean check = actual.equals(expected);
         return check;
     }
 
     public static void assertEquals(Object actual, Object expected, String message) {
         waitForPageLoaded();
-        System.out.println("Assert equals: " + actual + " \uD83D\uDFF0 " + expected);
+        LogUtils.info("Assert equals: " + actual + " \uD83D\uDFF0 " + expected);
         Assert.assertEquals(actual, expected, message);
     }
 
     public static boolean verifyContains(String actual, String expected) {
         waitForPageLoaded();
-        System.out.println("Verify contains: " + actual + " and " + expected);
+        LogUtils.info("Verify contains: " + actual + " and " + expected);
         boolean check = actual.contains(expected);
         return check;
     }
 
     public static void assertContains(String actual, String expected, String message) {
         waitForPageLoaded();
-        System.out.println("Assert contains: " + actual + " and " + expected);
+        LogUtils.info("Assert contains: " + actual + " and " + expected);
         boolean check = actual.contains(expected);
         Assert.assertTrue(check, message);
     }
 
     public static void assertNotContains(String actual, String expected, String message) {
         waitForPageLoaded();
-        System.out.println("Assert contains: " + actual + " and " + expected);
+        LogUtils.info("Assert contains: " + actual + " and " + expected);
         boolean check = actual.contains(expected);
         Assert.assertFalse(check, message);
     }
@@ -452,5 +475,41 @@ public class WebUI {
 
     public static String getPageSource(){
         return DriverManager.getDriver().getPageSource();
+    }
+
+    public static void uploadFileWithRobotClass(By divFileUpload, String filePath){
+        //Click để mở form upload
+        WebUI.clickElement(divFileUpload);
+        WebUI.sleep(3);
+
+        // Khởi tạo Robot class
+        Robot rb = null;
+        try {
+            rb = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+        // Copy File path vào Clipboard
+        StringSelection str = new StringSelection(filePath);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(str, null);
+
+        WebUI.sleep(1);
+
+        // Nhấn Control+V để dán
+        rb.keyPress(KeyEvent.VK_CONTROL);
+        rb.keyPress(KeyEvent.VK_V);
+
+        // Xác nhận Control V trên
+        rb.keyRelease(KeyEvent.VK_CONTROL);
+        rb.keyRelease(KeyEvent.VK_V);
+
+        WebUI.sleep(1);
+
+        // Nhấn Enter
+        rb.keyPress(KeyEvent.VK_ENTER);
+        rb.keyRelease(KeyEvent.VK_ENTER);
+
+        WebUI.sleep(4);
     }
 }

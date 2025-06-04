@@ -2,6 +2,7 @@ package Bai26_ParallelExcutionPOM.Pages;
 
 import Keyword.WebUI;
 import driver.DriverManager;
+import helpers.ExcelHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -60,7 +61,6 @@ public class customerPage extends basePage {
     }
 
     public void submitNewCustomer(String customerName){
-
         WebUI.setText(inputCompany, customerName);
         WebUI.setText(inputPhone,"123456789" );
         WebUI.setText(inputVAT, "09876543");
